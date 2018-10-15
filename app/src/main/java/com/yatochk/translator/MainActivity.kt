@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity(), TranslateContractView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        App.getComponent().injectsMainActivity(this)
+        App.component!!.injectsMainActivity(this)
         val presenter = Presenter(model)
         presenter.attachView(this)
 
