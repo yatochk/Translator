@@ -1,6 +1,6 @@
 package com.yatochk.translator.dagger;
 
-import com.yatochk.translator.model.Database;
+import com.yatochk.translator.model.DatabaseController;
 
 import dagger.Module;
 import dagger.Provides;
@@ -8,7 +8,7 @@ import dagger.Provides;
 @Module
 class DatabaseModule {
     @Provides
-    Database provideDatabaseController() {
-        return new Database();
+    DatabaseController provideDatabaseController() {
+        return new DatabaseController();
     }
 }

@@ -2,12 +2,19 @@ package com.yatochk.translator
 
 import com.yatochk.translator.model.Model
 
-class Presenter(val model: Model) {
+class Presenter(val model: Model) : PresenterContractModel {
 
-    lateinit var view: TranslateContractView
+    lateinit var view: PresenterContractView
 
-    fun attachView(view: TranslateContractView) {
-        this.view = view
+    init {
+        model.presenter = this
+    }
+
+    override fun onTranslateComplete(translatedText: String) {
+        view.showTranslatedText(translatedText)
+    }
+
+    fun translate(){
     }
 
 }

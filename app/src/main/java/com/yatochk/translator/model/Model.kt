@@ -1,16 +1,26 @@
 package com.yatochk.translator.model
 
-class Model (database: Database, onlineTranslate: OnlineTranslate) {
+import com.yatochk.translator.PresenterContractModel
 
-    fun addTranslate(){
+class Model(private val databaseController: DatabaseController,
+            private val onlineTranslateController: OnlineTranslateController) : ModelContractControllers {
 
+    init {
+        onlineTranslateController.model = this
+        databaseController.model = this
     }
 
-    fun deleteTranslate(){
-
+    override fun onTranslateComplete(translatedText: String) {
+        presenter.onTranslateComplete(translatedText)
     }
 
-    fun onlineTranslate(){
+    lateinit var presenter: PresenterContractModel
+
+    fun translate(text: String, fromLang: String, toLang: String) {
+        onlineTranslateController.translate(text)
+    }
+
+    fun getSavedTranslate() {
 
     }
 

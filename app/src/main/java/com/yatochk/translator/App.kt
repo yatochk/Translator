@@ -13,7 +13,7 @@ class App : Application() {
     }
 
     companion object {
-        var component: ModelComponent? = null
+        lateinit var component: ModelComponent
             private set
     }
 }

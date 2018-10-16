@@ -1,8 +1,8 @@
 package com.yatochk.translator.dagger;
 
-import com.yatochk.translator.model.Database;
+import com.yatochk.translator.model.DatabaseController;
 import com.yatochk.translator.model.Model;
-import com.yatochk.translator.model.OnlineTranslate;
+import com.yatochk.translator.model.OnlineTranslateController;
 
 import dagger.Module;
 import dagger.Provides;
@@ -11,8 +11,8 @@ import dagger.Provides;
 class ModelModule {
 
     @Provides
-    Model provideModel(Database database, OnlineTranslate onlineTranslate) {
-        return new Model(database, onlineTranslate);
+    Model provideModel(DatabaseController databaseController, OnlineTranslateController onlineTranslateController) {
+        return new Model(databaseController, onlineTranslateController);
     }
 
 }
