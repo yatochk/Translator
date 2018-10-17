@@ -1,5 +1,5 @@
 package com.yatochk.translator.model
 
 class DatabaseController {
-    lateinit var model: ModelContractControllers
+    lateinit var model: ModelContract
 }

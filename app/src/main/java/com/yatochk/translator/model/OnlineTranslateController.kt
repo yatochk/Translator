@@ -4,14 +4,18 @@ import android.os.AsyncTask
 
 class OnlineTranslateController : TranslateTaskContract {
 
-    lateinit var model: ModelContractControllers
+    lateinit var model: ModelContract
 
     override fun onGetLanguageList(getLanguagesResult: String) {
-
+        val languageList = LinkedHashMap<String, String>()
+        //TODO("Спарсить json из getLanguagesResult в LinkedHashMap<String, String>")
+        model.onGetLanguageListComplete(languageList)
     }
 
     override fun onTranslated(translateResult: String) {
-        model.onTranslateComplete(translateResult)
+        val translateText = ""
+        //TODO("Спарсить json из translateResult, обработать код ошибки и отдать переведенный текст")
+        model.onTranslateComplete(translateText)
     }
 
     override fun onLangDefinition(definitionResult: String) {

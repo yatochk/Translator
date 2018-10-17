@@ -11,6 +11,16 @@
         android:layout_height="40dp"
         android:background="@color/colorPrimaryLight">
 
+        <TextView
+            android:id="@+id/fromLang"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="English"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/colorAccent"
+            android:layout_toStartOf="@id/swap_lang" />
+
         <Button
             android:id="@+id/swap_lang"
             android:layout_width="40dp"
@@ -18,6 +28,16 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:background="@drawable/direction" />
+
+        <TextView
+            android:id="@+id/toLang"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Russian"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/colorAccent"
+            android:layout_toEndOf="@id/swap_lang" />
 
     </RelativeLayout>
 
@@ -29,7 +49,7 @@
         android:padding="@dimen/def_padding">
 
         <EditText
-            android:id="@+id/user_text"
+            android:id="@+id/translate_text"
             android:layout_width="270dp"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"

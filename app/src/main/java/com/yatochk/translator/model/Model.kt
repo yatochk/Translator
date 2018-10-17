@@ -1,20 +1,28 @@
 package com.yatochk.translator.model
 
-import com.yatochk.translator.PresenterContractModel
+import com.yatochk.translator.presenter.Presenter
 
 class Model(private val databaseController: DatabaseController,
-            private val onlineTranslateController: OnlineTranslateController) : ModelContractControllers {
+            private val onlineTranslateController: OnlineTranslateController) : ModelContract {
 
     init {
         onlineTranslateController.model = this
         databaseController.model = this
     }
 
+    override fun onLangDefinitionComplete(language: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onGetLanguageListComplete(languageList: LinkedHashMap<String, String>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun onTranslateComplete(translatedText: String) {
         presenter.onTranslateComplete(translatedText)
     }
 
-    lateinit var presenter: PresenterContractModel
+    lateinit var presenter: Presenter
 
     fun translate(text: String, fromLang: String, toLang: String) {
         onlineTranslateController.translate(text)

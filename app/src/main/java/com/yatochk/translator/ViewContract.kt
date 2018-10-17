@@ -1,6 +1,9 @@
 package com.yatochk.translator
 
-interface PresenterContractView {
+interface ViewContract {
+    var translateText: String
+    var fromLanguage: String
+    var toLanguage: String
     fun openTranslateView()
     fun hideTranslateView()
     fun showTranslatedText(text: String)
