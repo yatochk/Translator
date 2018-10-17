@@ -13,21 +13,20 @@ class Model(private val databaseController: DatabaseController,
     }
 
     override fun onLangDefinitionComplete(language: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onGetLanguageListComplete(languageList: LinkedHashMap<String, String>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onTranslateComplete(translatedText: String) {
         presenter.onTranslateComplete(translatedText)
+        databaseController.addTranslate()
     }
 
     lateinit var presenter: Presenter
 
     fun translate(text: String, fromLang: String, toLang: String) {
-        onlineTranslateController.translate(text)
+        onlineTranslateController.translate(text, fromLang, toLang)
     }
 
     fun getSavedTranslate() {

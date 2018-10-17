@@ -16,6 +16,12 @@ class Presenter(val model: Model) : PresenterContract {
         view.showTranslatedText(translatedText)
     }
 
+    override fun onLangDefinitionComplete(language: String) {
+    }
+
+    override fun onGetLanguageListComplete(languageList: LinkedHashMap<String, String>) {
+    }
+
     fun translate() {
         if (!isTranslateViewOpened){
             view.openTranslateView()
