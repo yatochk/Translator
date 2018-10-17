@@ -1,6 +1,7 @@
-package com.yatochk.translator.model
+package com.yatochk.translator.model.translate
 
 import android.os.AsyncTask
+import com.yatochk.translator.model.ModelContract
 
 class OnlineTranslateController : TranslateTaskContract {
 
@@ -13,7 +14,7 @@ class OnlineTranslateController : TranslateTaskContract {
     }
 
     override fun onTranslated(translateResult: String) {
-        val translateText = ""
+        val translateText = translateResult
         //TODO("Спарсить json из translateResult, обработать код ошибки и отдать переведенный текст")
         model.onTranslateComplete(translateText)
     }
@@ -42,7 +43,7 @@ class OnlineTranslateController : TranslateTaskContract {
 
         override fun doInBackground(vararg params: Void?): String {
 
-            return ""
+            return text
         }
 
         override fun onPostExecute(result: String?) {

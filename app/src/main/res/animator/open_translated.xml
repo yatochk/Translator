@@ -4,7 +4,6 @@
         android:duration="250"
         android:interpolator="@android:anim/decelerate_interpolator"
         android:propertyName="Y"
-        android:valueFrom="900dp"
-        android:valueTo="360dp"
+        android:valueTo="0dp"
         android:valueType="floatType" />
 </set>

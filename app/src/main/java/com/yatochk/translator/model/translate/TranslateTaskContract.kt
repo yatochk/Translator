@@ -1,4 +1,4 @@
-package com.yatochk.translator.model
+package com.yatochk.translator.model.translate
 
 interface TranslateTaskContract {
     fun onTranslated(translateResult: String)

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
+    android:layout_height="300dp"
     android:layout_alignParentBottom="true"
+    android:layout_marginBottom="-165dp"
     android:orientation="vertical">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -15,11 +16,11 @@
             android:id="@+id/fromLang"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="English"
+            android:layout_toStartOf="@id/swap_lang"
             android:gravity="center"
-            android:textSize="18sp"
+            android:text="English"
             android:textColor="@color/colorAccent"
-            android:layout_toStartOf="@id/swap_lang" />
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/swap_lang"
@@ -33,11 +34,11 @@
             android:id="@+id/toLang"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Russian"
+            android:layout_toEndOf="@id/swap_lang"
             android:gravity="center"
-            android:textSize="18sp"
+            android:text="Russian"
             android:textColor="@color/colorAccent"
-            android:layout_toEndOf="@id/swap_lang" />
+            android:textSize="18sp" />
 
     </RelativeLayout>
 
@@ -54,6 +55,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:gravity="bottom"
+            android:isScrollContainer="false"
             android:hint="@string/input_text"
             android:inputType="textMultiLine"
             android:textColor="@color/text_color_primary"
@@ -66,6 +68,20 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:background="@drawable/go_translate" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        android:padding="@dimen/def_padding">
+
+        <TextView
+            android:id="@+id/translated_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:background="@color/colorPrimaryLight" />
 
     </RelativeLayout>
 </LinearLayout>

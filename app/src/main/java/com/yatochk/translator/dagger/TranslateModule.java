@@ -1,6 +1,6 @@
 package com.yatochk.translator.dagger;
 
-import com.yatochk.translator.model.OnlineTranslateController;
+import com.yatochk.translator.model.translate.OnlineTranslateController;
 
 import dagger.Module;
 import dagger.Provides;

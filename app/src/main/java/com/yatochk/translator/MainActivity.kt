@@ -18,29 +18,35 @@ class MainActivity : AppCompatActivity(), ViewContract {
     @Inject
     lateinit var model: Model
 
-
     private lateinit var openAnimator: Animator
+    private lateinit var presenter: Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         App.component.injectsMainActivity(this)
-        val presenter = Presenter(model)
+        presenter = Presenter(model)
         presenter.view = this
 
         openAnimator = AnimatorInflater.loadAnimator(this, R.animator.open_translated)
         openAnimator.setTarget(input_layout)
+
         input_layout.go_translate.setOnClickListener {
             translateText = input_layout.translate_text.text.toString()
             fromLanguage = input_layout.fromLang.text.toString()
             toLanguage = input_layout.toLang.text.toString()
             presenter.translate()
         }
+
+        input_layout.input.setOnFocusChangeListener { _, hasFocus ->
+            presenter.focusChangeInputText(hasFocus)
+        }
     }
 
     override fun openTranslateView() {
         openAnimator.start()
+        openAnimator.setupEndValues()
     }
 
     override fun hideTranslateView() {
@@ -48,6 +54,11 @@ class MainActivity : AppCompatActivity(), ViewContract {
     }
 
     override fun showTranslatedText(text: String) {
+        input_layout.translated_text.text = text
+    }
 
+    override fun onBackPressed() {
+        if (presenter.backPressed())
+            super.onBackPressed()
     }
 }

@@ -1,5 +1,7 @@
 package com.yatochk.translator.model
 
+import com.yatochk.translator.model.database.DatabaseController
+import com.yatochk.translator.model.translate.OnlineTranslateController
 import com.yatochk.translator.presenter.Presenter
 
 class Model(private val databaseController: DatabaseController,

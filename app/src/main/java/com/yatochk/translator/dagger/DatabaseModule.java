@@ -1,6 +1,6 @@
 package com.yatochk.translator.dagger;
 
-import com.yatochk.translator.model.DatabaseController;
+import com.yatochk.translator.model.database.DatabaseController;
 
 import dagger.Module;
 import dagger.Provides;
