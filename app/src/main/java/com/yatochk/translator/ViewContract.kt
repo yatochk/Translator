@@ -6,6 +6,7 @@ interface ViewContract {
     var toLanguage: String
     fun openTranslateView()
     fun hideTranslateView()
+    fun updateSpinnerAdapter(languages: LinkedHashMap<String, String>)
     fun showTranslatedText(text: String)
     fun showToast(message: String)
 }

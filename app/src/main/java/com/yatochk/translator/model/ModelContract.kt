@@ -1,12 +1,12 @@
 package com.yatochk.translator.model
 
 interface ModelContract {
-    interface Contract{
+    interface Contract {
         fun translate(text: String, fromLang: String, toLang: String)
-        fun languageList(text: String, fromLang: String, toLang: String)
+        fun languageList(uiLanguage: String)
     }
 
-    interface OnModelTaskListener{
+    interface OnModelTaskListener {
         fun onTranslateComplete(translatedText: String)
         fun onTranslateError(errorCode: Int)
         fun onGetLanguageListComplete(languageList: LinkedHashMap<String, String>)

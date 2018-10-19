@@ -1,5 +1,6 @@
 package com.yatochk.translator.presenter
 
+import com.yatochk.translator.R
 import com.yatochk.translator.ViewContract
 import com.yatochk.translator.model.Model
 import com.yatochk.translator.model.ModelContract
@@ -12,7 +13,8 @@ class Presenter(val model: Model) : PresenterContract, ModelContract.OnModelTask
     private var isTranslateViewOpened = false
 
     init {
-        model.presenter = this
+        model.onModelTaskListener = this
+        model.languageList(R.string.locale_cod.toString())
     }
 
     override fun translateClick() {
@@ -53,7 +55,7 @@ class Presenter(val model: Model) : PresenterContract, ModelContract.OnModelTask
     }
 
     override fun onGetLanguageListComplete(languageList: LinkedHashMap<String, String>) {
-
+        view.updateSpinnerAdapter(languageList)
     }
 
     override fun onGetLanguageListError(errorCode: Int) {

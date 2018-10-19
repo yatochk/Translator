@@ -16,9 +16,10 @@ const val IMPOSSIBLY_ERROR = 422
 const val UNKNOWN_ERROR = 0
 const val SUCCESSFUL_TASK = 200
 
-class OnlineTranslateController : Translate.TaskContract {
+class OnlineTranslateController : Translate.Contract, ServerTaskListener {
 
-    lateinit var model: Translate.OnTranslateTaskListener
+    lateinit var onTranslateTaskListener: Translate.OnTranslateTaskListener
+    private val languageMap = LinkedHashMap<String, String>()
 
     override fun onTranslated(translateResult: String) {
         val jsonObject = JSONObject(translateResult)
@@ -27,11 +28,11 @@ class OnlineTranslateController : Translate.TaskContract {
         translateText = translateText.substring(2, translateText.lastIndexOf("]") - 1)
         val answerCode = jsonObject.getInt("code")
 
-        model.onTranslateComplete(translateText, answerCode)
+        onTranslateTaskListener.onTranslateComplete(translateText, answerCode)
     }
 
     override fun onGetLanguageList(languagesResult: String) {
-        val languageMap = LinkedHashMap<String, String>()
+        languageMap.clear()
         var answerCode = SUCCESSFUL_TASK
         val jsonObject = JSONObject(languagesResult)
         if (jsonObject.has("langs")) {
@@ -43,45 +44,52 @@ class OnlineTranslateController : Translate.TaskContract {
                 languageMap[name] = languagesArrayJson.getString(name)
             }
         } else {
-            answerCode = if (jsonObject.has("code"))
-                jsonObject.getInt("code")
-            else
-                UNKNOWN_ERROR
+            answerCode = if (jsonObject.has("code")) jsonObject.getInt("code") else UNKNOWN_ERROR
         }
 
-        model.onGetLanguageListComplete(languageMap, answerCode)
+        onTranslateTaskListener.onGetLanguageListComplete(languageMap, answerCode)
     }
 
-    fun translate(text: String, fromLang: String, toLang: String) {
-        val translateTask = TranslateTask(text, fromLang, toLang, this)
+    override fun translate(text: String, fromLang: String, toLang: String) {
+        var fromLangCode = ""
+        var toLangCode = ""
+        for (pair in languageMap.entries) {
+            if (fromLang == pair.value)
+                fromLangCode = pair.key
+
+            if (toLang == pair.value)
+                toLangCode = pair.key
+        }
+        val languageDirection = "$fromLangCode-$toLangCode"
+        val translateTask = TranslateTask(text, languageDirection, this)
         translateTask.execute()
     }
 
-    fun getLanguageList(uiLanguage: String) {
+    override fun languageList(uiLanguage: String) {
         val languageListTask = LanguageListTask(this, uiLanguage)
         languageListTask.execute()
     }
 
-    class TranslateTask(val text: String, val fromLang: String, val toLang: String,
-                        private val translateTaskContract: Translate.TaskContract)
-        : ServerTask(url = "$TRANSLATE_URL?key=$API_KEY&text=$text&lang=en-ru&callback=translate") {
+    class TranslateTask(val text: String, languageDirection: String,
+                        private val serverTaskListener: ServerTaskListener)
+        : ServerTask(url = "$TRANSLATE_URL?key=$API_KEY&text=$text&lang=$languageDirection&callback=translate") {
 
         override fun onPostExecute(result: String) {
             super.onPostExecute(result)
             if (result != "") {
                 val json = result.substring(result.indexOf("(") + 1, result.lastIndexOf(")"))
-                translateTaskContract.onTranslated(json)
+                serverTaskListener.onTranslated(json)
             }
         }
     }
 
-    class LanguageListTask(private val translateTaskContract: Translate.TaskContract, uiLanguage: String)
+    class LanguageListTask(private val serverTaskListener: ServerTaskListener, uiLanguage: String)
         : ServerTask(url = "$LANG_LIST_URL?key=$API_KEY&ui=$uiLanguage") {
 
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
             if (result != null)
-                translateTaskContract.onGetLanguageList(result)
+                serverTaskListener.onGetLanguageList(result)
         }
     }
 
@@ -105,6 +113,5 @@ class OnlineTranslateController : Translate.TaskContract {
 
             return resultTranslate
         }
-
     }
 }

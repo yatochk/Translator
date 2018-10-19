@@ -9,38 +9,34 @@ class Model(private val databaseController: DatabaseController,
             private val onlineTranslateController: OnlineTranslateController) : ModelContract.Contract,
         Translate.OnTranslateTaskListener {
 
-    lateinit var presenter: ModelContract.OnModelTaskListener
+    lateinit var onModelTaskListener: ModelContract.OnModelTaskListener
 
     init {
-        onlineTranslateController.model = this
+        onlineTranslateController.onTranslateTaskListener = this
         databaseController.model = this
     }
 
     override fun onGetLanguageListComplete(languageList: LinkedHashMap<String, String>, answerCode: Int) {
         if (answerCode == SUCCESSFUL_TASK)
-            presenter.onGetLanguageListComplete(languageList)
+            onModelTaskListener.onGetLanguageListComplete(languageList)
         else
-            presenter.onGetLanguageListError(answerCode)
+            onModelTaskListener.onGetLanguageListError(answerCode)
     }
 
     override fun onTranslateComplete(translatedText: String, answerCode: Int) {
-        if (answerCode == 200) {
+        if (answerCode == SUCCESSFUL_TASK) {
             databaseController.addTranslate()
-            presenter.onTranslateComplete(translatedText)
+            onModelTaskListener.onTranslateComplete(translatedText)
         } else
-            presenter.onTranslateError(answerCode)
+            onModelTaskListener.onTranslateError(answerCode)
     }
 
     override fun translate(text: String, fromLang: String, toLang: String) {
+
         onlineTranslateController.translate(text, fromLang, toLang)
     }
 
-    override fun languageList(text: String, fromLang: String, toLang: String) {
-
+    override fun languageList(uiLanguage: String) {
+        onlineTranslateController.languageList(uiLanguage)
     }
-
-    fun getSavedTranslate() {
-
-    }
-
 }

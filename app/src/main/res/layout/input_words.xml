@@ -12,15 +12,11 @@
         android:layout_height="40dp"
         android:background="@color/colorPrimaryLight">
 
-        <TextView
-            android:id="@+id/fromLang"
+        <Spinner
+            android:id="@+id/from_lang_spinner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toStartOf="@id/swap_lang"
-            android:gravity="center"
-            android:text="English"
-            android:textColor="@color/colorAccent"
-            android:textSize="18sp" />
+            android:layout_toStartOf="@id/swap_lang" />
 
         <Button
             android:id="@+id/swap_lang"
@@ -30,15 +26,11 @@
             android:layout_centerVertical="true"
             android:background="@drawable/direction" />
 
-        <TextView
-            android:id="@+id/toLang"
+        <Spinner
+            android:id="@+id/to_lang_spinner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toEndOf="@id/swap_lang"
-            android:gravity="center"
-            android:text="Russian"
-            android:textColor="@color/colorAccent"
-            android:textSize="18sp" />
+            android:layout_toEndOf="@id/swap_lang" />
 
     </RelativeLayout>
 
@@ -55,11 +47,11 @@
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:gravity="bottom"
-            android:isScrollContainer="false"
             android:hint="@string/input_text"
             android:inputType="textMultiLine"
+            android:isScrollContainer="false"
             android:textColor="@color/text_color_primary"
-            android:textSize="18sp" />
+            android:textSize="18sp"/>
 
         <Button
             android:id="@+id/go_translate"
@@ -80,8 +72,8 @@
             android:id="@+id/translated_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:background="@color/colorPrimaryLight" />
+            android:background="@color/colorPrimaryLight"
+            android:scrollbars="vertical" />
 
     </RelativeLayout>
 </LinearLayout>
