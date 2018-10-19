@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorInflater
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.widget.Toast
 import com.yatochk.translator.model.Model
 import com.yatochk.translator.presenter.Presenter
 import kotlinx.android.synthetic.main.activity_main.*
@@ -11,6 +12,7 @@ import kotlinx.android.synthetic.main.input_words.view.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), ViewContract {
+
     override var translateText: String = ""
     override var fromLanguage: String = "English"
     override var toLanguage: String = "Russian"
@@ -36,7 +38,7 @@ class MainActivity : AppCompatActivity(), ViewContract {
             translateText = input_layout.translate_text.text.toString()
             fromLanguage = input_layout.fromLang.text.toString()
             toLanguage = input_layout.toLang.text.toString()
-            presenter.translate()
+            presenter.translateClick()
         }
 
         input_layout.input.setOnFocusChangeListener { _, hasFocus ->
@@ -60,5 +62,9 @@ class MainActivity : AppCompatActivity(), ViewContract {
     override fun onBackPressed() {
         if (presenter.backPressed())
             super.onBackPressed()
+    }
+
+    override fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 }

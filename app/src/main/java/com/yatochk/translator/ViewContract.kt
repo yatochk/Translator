@@ -7,4 +7,5 @@ interface ViewContract {
     fun openTranslateView()
     fun hideTranslateView()
     fun showTranslatedText(text: String)
+    fun showToast(message: String)
 }

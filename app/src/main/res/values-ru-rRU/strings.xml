@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="input_text">Введите текст для перевода</string>
+    <string name="locale_cod">ru</string>
+</resources>
