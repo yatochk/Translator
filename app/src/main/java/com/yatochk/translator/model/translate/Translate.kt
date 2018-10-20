@@ -1,6 +1,6 @@
 package com.yatochk.translator.model.translate
 
-interface Translate {
+object Translate {
     interface Contract {
         fun translate(text: String, fromLang: String, toLang: String)
         fun languageList(uiLanguage: String)
@@ -12,7 +12,12 @@ interface Translate {
     }
 }
 
-interface ServerTaskListener {
-    fun onTranslated(translateResult: String)
-    fun onGetLanguageList(languagesResult: String)
+object ServerTaskListener {
+    interface OnTranslateListener {
+        fun onTranslated(translateResult: String)
+    }
+
+    interface OnGetLanguageListListener {
+        fun onGetLanguageList(languagesResult: String)
+    }
 }

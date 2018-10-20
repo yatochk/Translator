@@ -19,8 +19,8 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(), ViewContract {
 
     override var translateText = ""
-    override var fromLanguage = "en"
-    override var toLanguage = "ru"
+    override var fromLanguage = "English"
+    override var toLanguage = "Russian"
 
     @Inject
     lateinit var model: Model
@@ -81,6 +81,8 @@ class MainActivity : AppCompatActivity(), ViewContract {
             languagesNames.add(name)
 
         arrayAdapter.notifyDataSetChanged()
+        input_layout.from_lang_spinner.setSelection(languages.values.indexOf(fromLanguage))
+        input_layout.to_lang_spinner.setSelection(languages.values.indexOf(toLanguage))
     }
 
     override fun openTranslateView() {

@@ -1,10 +1,8 @@
 package com.yatochk.translator.model.database
 
-import com.yatochk.translator.model.ModelContract
+class DatabaseHelper : Database.Contract {
 
-class DatabaseController : DatabaseContract {
-
-    lateinit var model: ModelContract.Contract
+    lateinit var onDatabaseTaskListener: Database.OnDatabaseTaskListener
 
     override fun addTranslate() {
     }
