@@ -31,8 +31,8 @@ class OnlineTranslateController : Translate.Contract {
                 toLangCode = pair.key
         }
         val languageDirection = "$fromLangCode-$toLangCode"
-        val translateTask = TranslateTask(text, languageDirection)
 
+        val translateTask = TranslateTask(text, languageDirection)
         translateTask.onTranslateListener = object : ServerTaskListener.OnTranslateListener {
             override fun onTranslated(translateResult: String) {
                 val jsonObject = JSONObject(translateResult)
@@ -41,7 +41,7 @@ class OnlineTranslateController : Translate.Contract {
                 translateText = translateText.substring(2, translateText.lastIndexOf("]") - 1)
                 val answerCode = jsonObject.getInt("code")
 
-                onTranslateTaskListener.onTranslateComplete(translateText, answerCode)
+                onTranslateTaskListener.onTranslateComplete(answerCode, translateText, fromLang, toLang)
             }
         }
 
@@ -98,7 +98,7 @@ class OnlineTranslateController : Translate.Contract {
         }
     }
 
-    open class ServerTask(open val url: String) : AsyncTask<Void, Void, String>() {
+    open class ServerTask(val url: String) : AsyncTask<Void, Void, String>() {
         override fun doInBackground(vararg params: Void?): String {
             var resultTranslate = ""
             try {

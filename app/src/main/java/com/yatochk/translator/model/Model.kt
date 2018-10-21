@@ -1,15 +1,17 @@
 package com.yatochk.translator.model
 
+import android.content.Context
 import com.yatochk.translator.model.database.Database
-import com.yatochk.translator.model.database.DatabaseHelper
+import com.yatochk.translator.model.database.DatabaseController
 import com.yatochk.translator.model.translate.OnlineTranslateController
 import com.yatochk.translator.model.translate.SUCCESSFUL_TASK
 import com.yatochk.translator.model.translate.Translate
 
-class Model(private val databaseHelper: DatabaseHelper,
+class Model(private val databaseController: DatabaseController,
             private val onlineTranslateController: OnlineTranslateController) : ModelContract.Contract {
 
     lateinit var onModelTaskListener: ModelContract.OnModelTaskListener
+    lateinit var context: Context
 
     init {
         onlineTranslateController.onTranslateTaskListener = object : Translate.OnTranslateTaskListener {
@@ -20,16 +22,16 @@ class Model(private val databaseHelper: DatabaseHelper,
                     onModelTaskListener.onGetLanguageListError(answerCode)
             }
 
-            override fun onTranslateComplete(translatedText: String, answerCode: Int) {
+            override fun onTranslateComplete(answerCode: Int, translatedText: String, fromLang: String, toLang: String) {
                 if (answerCode == SUCCESSFUL_TASK) {
-                    databaseHelper.addTranslate()
+                    databaseController.addTranslate(context, fromLang, toLang, translatedText)
                     onModelTaskListener.onTranslateComplete(translatedText)
                 } else
                     onModelTaskListener.onTranslateError(answerCode)
             }
         }
 
-        databaseHelper.onDatabaseTaskListener = object : Database.OnDatabaseTaskListener {
+        databaseController.onDatabaseListener = object : Database.OnDatabaseListener {
             override fun onTranslateRemoved() {
 
             }
@@ -37,7 +39,6 @@ class Model(private val databaseHelper: DatabaseHelper,
             override fun onTranslateAdded() {
 
             }
-
         }
     }
 

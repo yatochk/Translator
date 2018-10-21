@@ -56,8 +56,7 @@ class MainActivity : AppCompatActivity(), ViewContract {
                 fromLanguage = languagesNames[position]
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
         input_layout.to_lang_spinner.onItemSelectedListener = object : OnItemSelectedListener {
@@ -66,8 +65,7 @@ class MainActivity : AppCompatActivity(), ViewContract {
                 toLanguage = languagesNames[position]
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
         input_layout.input.setOnFocusChangeListener { _, hasFocus ->

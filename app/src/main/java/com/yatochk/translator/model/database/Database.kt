@@ -1,14 +1,26 @@
 package com.yatochk.translator.model.database
 
-interface Database {
+import android.content.Context
+
+object Database {
     interface Contract {
-        fun addTranslate()
-        fun removeTranslate()
-        fun getTranslates()
+        fun addTranslate(context: Context, fromLanguage: String, toLanguage: String, text: String)
+        fun removeTranslate(context: Context, removeRowId: String)
+        fun getTranslates(context: Context)
     }
 
-    interface OnDatabaseTaskListener {
+    interface OnDatabaseListener {
         fun onTranslateAdded()
         fun onTranslateRemoved()
+    }
+}
+
+object DbTaskListener {
+    interface OnAddListener {
+        fun onAdded(newRowId: Long)
+    }
+
+    interface OnRemoveListener {
+        fun onRemoved()
     }
 }
