@@ -7,7 +7,7 @@ object Translate {
     }
 
     interface OnTranslateTaskListener {
-        fun onTranslateComplete(answerCode: Int, translatedText: String, fromLang: String, toLang: String)
+        fun onTranslateComplete(answerCode: Int, text: String, translatedText: String, fromLang: String, toLang: String)
         fun onGetLanguageListComplete(languageList: LinkedHashMap<String, String>, answerCode: Int)
     }
 }

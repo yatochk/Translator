@@ -41,7 +41,7 @@ class OnlineTranslateController : Translate.Contract {
                 translateText = translateText.substring(2, translateText.lastIndexOf("]") - 1)
                 val answerCode = jsonObject.getInt("code")
 
-                onTranslateTaskListener.onTranslateComplete(answerCode, translateText, fromLang, toLang)
+                onTranslateTaskListener.onTranslateComplete(answerCode, text, translateText, fromLang, toLang)
             }
         }
 

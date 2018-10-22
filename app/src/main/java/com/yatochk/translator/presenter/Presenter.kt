@@ -1,18 +1,23 @@
 package com.yatochk.translator.presenter
 
 import com.yatochk.translator.R
-import com.yatochk.translator.ViewContract
 import com.yatochk.translator.model.Model
 import com.yatochk.translator.model.ModelContract
+import com.yatochk.translator.model.database.DatabaseTranslate
 import com.yatochk.translator.model.translate.IMPOSSIBLY_ERROR
 import com.yatochk.translator.model.translate.LENGTH_ERROR
+import com.yatochk.translator.view.ViewContract
 
-class Presenter(val model: Model) : PresenterContract {
+class Presenter(val model: Model, val view: ViewContract) : PresenterContract {
 
-    lateinit var view: ViewContract
     private var isTranslateViewOpened = false
 
     private val onModelTaskListener = object : ModelContract.OnModelTaskListener {
+
+        override fun onGetSavedTranslate(arrayDatabaseTranslates: ArrayList<DatabaseTranslate>) {
+            view.updateTranslateListAdapter(arrayDatabaseTranslates)
+        }
+
         override fun onTranslateComplete(translatedText: String) {
             view.showTranslatedText(translatedText)
         }
@@ -37,8 +42,10 @@ class Presenter(val model: Model) : PresenterContract {
     }
 
     init {
+        model.context = view.context
         model.onModelTaskListener = onModelTaskListener
         model.languageList(R.string.locale_cod.toString())
+        model.savedTranslate()
     }
 
     override fun translateClick() {

@@ -1,6 +1,6 @@
 package com.yatochk.translator.dagger;
 
-import com.yatochk.translator.MainActivity;
+import com.yatochk.translator.view.MainActivity;
 
 import dagger.Component;
 

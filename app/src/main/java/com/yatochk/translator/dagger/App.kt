@@ -1,9 +1,6 @@
-package com.yatochk.translator
+package com.yatochk.translator.dagger
 
 import android.app.Application
-
-import com.yatochk.translator.dagger.DaggerModelComponent
-import com.yatochk.translator.dagger.ModelComponent
 
 class App : Application() {
 

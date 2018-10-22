@@ -3,6 +3,7 @@ package com.yatochk.translator.model
 import android.content.Context
 import com.yatochk.translator.model.database.Database
 import com.yatochk.translator.model.database.DatabaseController
+import com.yatochk.translator.model.database.DatabaseTranslate
 import com.yatochk.translator.model.translate.OnlineTranslateController
 import com.yatochk.translator.model.translate.SUCCESSFUL_TASK
 import com.yatochk.translator.model.translate.Translate
@@ -22,9 +23,9 @@ class Model(private val databaseController: DatabaseController,
                     onModelTaskListener.onGetLanguageListError(answerCode)
             }
 
-            override fun onTranslateComplete(answerCode: Int, translatedText: String, fromLang: String, toLang: String) {
+            override fun onTranslateComplete(answerCode: Int, text: String, translatedText: String, fromLang: String, toLang: String) {
                 if (answerCode == SUCCESSFUL_TASK) {
-                    databaseController.addTranslate(context, fromLang, toLang, translatedText)
+                    databaseController.addTranslate(context, fromLang, toLang, text, translatedText)
                     onModelTaskListener.onTranslateComplete(translatedText)
                 } else
                     onModelTaskListener.onTranslateError(answerCode)
@@ -32,19 +33,29 @@ class Model(private val databaseController: DatabaseController,
         }
 
         databaseController.onDatabaseListener = object : Database.OnDatabaseListener {
-            override fun onTranslateRemoved() {
+            override fun onGetTranslates(arrayDatabaseTranslates: ArrayList<DatabaseTranslate>) {
+                onModelTaskListener.onGetSavedTranslate(arrayDatabaseTranslates)
+            }
 
+            override fun onTranslateRemoved() {
+                databaseController.getTranslates(context)
             }
 
             override fun onTranslateAdded() {
-
+                databaseController.getTranslates(context)
             }
         }
     }
+
+    override fun savedTranslate() =
+            databaseController.getTranslates(context)
 
     override fun translate(text: String, fromLang: String, toLang: String) =
             onlineTranslateController.translate(text, fromLang, toLang)
 
     override fun languageList(uiLanguage: String) =
             onlineTranslateController.languageList(uiLanguage)
+
+    override fun deleteTranslate(deleteRowId: String) =
+            databaseController.removeTranslate(context, deleteRowId)
 }
