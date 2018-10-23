@@ -8,7 +8,7 @@ import com.yatochk.translator.R
 import com.yatochk.translator.model.database.DatabaseTranslate
 import kotlinx.android.synthetic.main.translate_recycle_item.view.*
 
-class TranslateRecyclerViewAdapter(private val translates: ArrayList<DatabaseTranslate>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TranslateRecyclerViewAdapter(private val translates: ArrayList<DatabaseTranslate>, private val onDeleteItem: OnDeleteItem) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
             TranslateViewHolder(
                     LayoutInflater.from(parent.context).inflate(
@@ -27,8 +27,15 @@ class TranslateRecyclerViewAdapter(private val translates: ArrayList<DatabaseTra
             to_text.text = translates[position].to_text
             from_lang.text = translates[position].fromLanguage
             to_lang.text = translates[position].toLanguage
+            delete_button.setOnClickListener {
+                onDeleteItem.onDelete(translates[position].rowId)
+            }
         }
     }
 
     class TranslateViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    interface OnDeleteItem {
+        fun onDelete(itemId: String)
+    }
 }

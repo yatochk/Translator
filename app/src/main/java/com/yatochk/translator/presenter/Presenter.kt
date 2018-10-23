@@ -9,11 +9,9 @@ import com.yatochk.translator.model.translate.LENGTH_ERROR
 import com.yatochk.translator.view.ViewContract
 
 class Presenter(val model: Model, val view: ViewContract) : PresenterContract {
-
     private var isTranslateViewOpened = false
 
     private val onModelTaskListener = object : ModelContract.OnModelTaskListener {
-
         override fun onGetSavedTranslate(arrayDatabaseTranslates: ArrayList<DatabaseTranslate>) {
             view.updateTranslateListAdapter(arrayDatabaseTranslates)
         }
@@ -54,6 +52,10 @@ class Presenter(val model: Model, val view: ViewContract) : PresenterContract {
             isTranslateViewOpened = true
         }
         model.translate(view.translateText, view.fromLanguage, view.toLanguage)
+    }
+
+    override fun deleteClick(itemId: String) {
+        model.deleteTranslate(itemId)
     }
 
     override fun backPressed(): Boolean {

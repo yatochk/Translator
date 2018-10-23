@@ -46,12 +46,16 @@ class DatabaseController : Database.Contract {
     }
 
     override fun removeTranslate(context: Context, removeRowId: String) {
-        if (databaseHelper == null) {
-            databaseHelper = TranslateDbHelper(context)
-            writableDatabase = databaseHelper!!.writableDatabase
-        }
+        databaseHelper = TranslateDbHelper(context)
+        writableDatabase = databaseHelper!!.writableDatabase
 
-        RemoveTranslateTask(writableDatabase!!, removeRowId).execute()
+        val removeTask = RemoveTranslateTask(writableDatabase!!, removeRowId)
+        removeTask.onRemoveListener = object : DbTaskListener.OnRemoveListener {
+            override fun onRemoved() {
+                onDatabaseListener.onTranslateRemoved()
+            }
+        }
+        removeTask.execute()
     }
 
     override fun getTranslates(context: Context) {
@@ -125,11 +129,19 @@ class DatabaseController : Database.Contract {
 
     class RemoveTranslateTask(private val writableDatabase: SQLiteDatabase, private val rowId: String)
         : AsyncTask<Void, Void, Int>() {
+        lateinit var onRemoveListener: DbTaskListener.OnRemoveListener
+
         override fun doInBackground(vararg params: Void?): Int {
             val selection = "${TranslateEntry._ID} LIKE ?"
             val selectionArgs = arrayOf(rowId)
 
             return writableDatabase.delete(TranslateEntry.TABLE_NAME, selection, selectionArgs)
+        }
+
+        override fun onPostExecute(result: Int?) {
+            super.onPostExecute(result)
+
+            onRemoveListener.onRemoved()
         }
     }
 

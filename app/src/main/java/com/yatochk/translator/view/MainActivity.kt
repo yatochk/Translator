@@ -76,7 +76,12 @@ class MainActivity : AppCompatActivity(), ViewContract {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        recyclerAdapter = TranslateRecyclerViewAdapter(translates)
+        val onDelete = object : TranslateRecyclerViewAdapter.OnDeleteItem {
+            override fun onDelete(itemId: String) {
+                presenter.deleteClick(itemId)
+            }
+        }
+        recyclerAdapter = TranslateRecyclerViewAdapter(translates, onDelete)
         translates_recycle.layoutManager = LinearLayoutManager(this)
         translates_recycle.adapter = recyclerAdapter
 
