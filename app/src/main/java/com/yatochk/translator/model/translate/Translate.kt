@@ -11,13 +11,3 @@ object Translate {
         fun onGetLanguageListComplete(languageList: LinkedHashMap<String, String>, answerCode: Int)
     }
 }
-
-object ServerTaskListener {
-    interface OnTranslateListener {
-        fun onTranslated(translateResult: String)
-    }
-
-    interface OnGetLanguageListListener {
-        fun onGetLanguageList(languagesResult: String)
-    }
-}

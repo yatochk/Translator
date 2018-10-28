@@ -3,16 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context=".view.MainActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/translates_recycle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/input_layout" />
+        android:layout_above="@id/input_layout"
+        android:layout_below="@id/show_layout"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="-12dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="-12dp" />
 
     <include
         android:id="@+id/input_layout"
         layout="@layout/input_words" />
+
+    <include
+        android:id="@+id/show_layout"
+        layout="@layout/show_translate" />
 
 </RelativeLayout>

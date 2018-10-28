@@ -1,16 +1,19 @@
 package com.yatochk.translator.presenter
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import com.yatochk.translator.R
 import com.yatochk.translator.model.Model
 import com.yatochk.translator.model.ModelContract
 import com.yatochk.translator.model.database.DatabaseTranslate
+import com.yatochk.translator.model.translate.CONNECTION_ERROR
 import com.yatochk.translator.model.translate.IMPOSSIBLY_ERROR
 import com.yatochk.translator.model.translate.LENGTH_ERROR
+import com.yatochk.translator.model.translate.VOID_TASK_ERROR
 import com.yatochk.translator.view.ViewContract
 
 class Presenter(val model: Model, val view: ViewContract) : PresenterContract {
-    private var isTranslateViewOpened = false
-
     private val onModelTaskListener = object : ModelContract.OnModelTaskListener {
         override fun onGetSavedTranslate(arrayDatabaseTranslates: ArrayList<DatabaseTranslate>) {
             view.updateTranslateListAdapter(arrayDatabaseTranslates)
@@ -18,16 +21,21 @@ class Presenter(val model: Model, val view: ViewContract) : PresenterContract {
 
         override fun onTranslateComplete(translatedText: String) {
             view.showTranslatedText(translatedText)
+            view.clearInputText()
         }
 
         override fun onTranslateError(errorCode: Int) {
-            val message = when (errorCode) {
-                LENGTH_ERROR -> "Your text is too long"
-                IMPOSSIBLY_ERROR -> "Your text cannot be translated"
-                else -> "Unknown translation error"
-            }
+            with(view.context) {
+                val message = when (errorCode) {
+                    LENGTH_ERROR -> getString(R.string.length_error)
+                    IMPOSSIBLY_ERROR -> getString(R.string.impossible_translate)
+                    CONNECTION_ERROR -> getString(R.string.connection_error)
+                    VOID_TASK_ERROR -> getString(R.string.void_translate)
+                    else -> view.context.getString(R.string.unknow_error)
+                }
 
-            view.showToast(message)
+                view.showToast(message)
+            }
         }
 
         override fun onGetLanguageListComplete(languageList: LinkedHashMap<String, String>) {
@@ -35,22 +43,22 @@ class Presenter(val model: Model, val view: ViewContract) : PresenterContract {
         }
 
         override fun onGetLanguageListError(errorCode: Int) {
-            view.showToast("Failed to get language list")
+            var message = view.context.getString(R.string.langs_list_error)
+            if (errorCode == CONNECTION_ERROR)
+                message = view.context.getString(R.string.connection_error)
+
+            view.showToast(message)
         }
     }
 
     init {
         model.context = view.context
         model.onModelTaskListener = onModelTaskListener
-        model.languageList(R.string.locale_cod.toString())
+        model.languageList(view.context.getString(R.string.locale_cod))
         model.savedTranslate()
     }
 
     override fun translateClick() {
-        if (!isTranslateViewOpened) {
-            view.openTranslateView()
-            isTranslateViewOpened = true
-        }
         model.translate(view.translateText, view.fromLanguage, view.toLanguage)
     }
 
@@ -58,18 +66,10 @@ class Presenter(val model: Model, val view: ViewContract) : PresenterContract {
         model.deleteTranslate(itemId)
     }
 
-    override fun backPressed(): Boolean {
-        if (isTranslateViewOpened) {
-            view.hideTranslateView()
-            isTranslateViewOpened = false
-            return false
-        }
-
-        return true
-    }
-
-    fun focusChangeInputText(hasFocused: Boolean) {
-        if (hasFocused && !isTranslateViewOpened)
-            view.openTranslateView()
+    override fun longClickTranslatedText() {
+        val clipBoard = view.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("text", view.translatedText)
+        clipBoard.primaryClip = clip
+        view.showToast(view.context.getString(R.string.copy_text))
     }
 }

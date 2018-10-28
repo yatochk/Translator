@@ -2,4 +2,12 @@
 <resources>
     <string name="input_text">Введите текст для перевода</string>
     <string name="locale_cod">ru</string>
+    <string name="translate_button">Перевести</string>
+    <string name="connection_error">Проверьте подключение к интернету</string>
+    <string name="langs_list_error">Не получается получить список языков</string>
+    <string name="impossible_translate">Ваш текст невозможно перевести</string>
+    <string name="length_error">Ваш текст слишком длинный</string>
+    <string name="unknow_error">Кажется что-то пошло не так</string>
+    <string name="void_translate">Сначала введите текст</string>
+    <string name="copy_text">Перевод скопирован</string>
 </resources>

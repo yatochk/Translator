@@ -8,7 +8,12 @@ import com.yatochk.translator.R
 import com.yatochk.translator.model.database.DatabaseTranslate
 import kotlinx.android.synthetic.main.translate_recycle_item.view.*
 
-class TranslateRecyclerViewAdapter(private val translates: ArrayList<DatabaseTranslate>, private val onDeleteItem: OnDeleteItem) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TranslateRecyclerViewAdapter(private val translates: ArrayList<DatabaseTranslate>)
+    : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var onClickListener: ((DatabaseTranslate) -> Unit)? = null
+    private var onDeleteItemListener: ((itemId: String) -> Unit)? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
             TranslateViewHolder(
                     LayoutInflater.from(parent.context).inflate(
@@ -23,19 +28,27 @@ class TranslateRecyclerViewAdapter(private val translates: ArrayList<DatabaseTra
         val mHolder = holder as TranslateViewHolder
         val itemView = mHolder.itemView
         with(itemView) {
+            setOnClickListener {
+                onClickListener?.invoke(translates[position])
+            }
+
             from_text.text = translates[position].from_text
             to_text.text = translates[position].to_text
             from_lang.text = translates[position].fromLanguage
             to_lang.text = translates[position].toLanguage
             delete_button.setOnClickListener {
-                onDeleteItem.onDelete(translates[position].rowId)
+                onDeleteItemListener?.invoke(translates[position].rowId)
             }
         }
     }
 
     class TranslateViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-    interface OnDeleteItem {
-        fun onDelete(itemId: String)
+    fun setOnClickTranslateListener(onClick: ((translates: DatabaseTranslate) -> Unit)) {
+        onClickListener = onClick
+    }
+
+    fun setOnClickDeleteListener(onDelete: ((itemId: String) -> Unit)) {
+        onDeleteItemListener = onDelete
     }
 }

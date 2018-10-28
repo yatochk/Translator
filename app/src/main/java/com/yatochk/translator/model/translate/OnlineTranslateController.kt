@@ -1,8 +1,9 @@
 package com.yatochk.translator.model.translate
 
-import android.os.AsyncTask
+import android.os.Handler
 import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.FileNotFoundException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
@@ -12,7 +13,8 @@ const val TRANSLATE_URL = "https://translate.yandex.net/api/v1.5/tr.json/transla
 const val LANG_LIST_URL = "https://translate.yandex.net/api/v1.5/tr.json/getLangs"
 const val LENGTH_ERROR = 413
 const val IMPOSSIBLY_ERROR = 422
-const val UNKNOWN_ERROR = 0
+const val VOID_TASK_ERROR = 0
+const val CONNECTION_ERROR = 111
 const val SUCCESSFUL_TASK = 200
 
 class OnlineTranslateController : Translate.Contract {
@@ -32,91 +34,78 @@ class OnlineTranslateController : Translate.Contract {
         }
         val languageDirection = "$fromLangCode-$toLangCode"
 
-        val translateTask = TranslateTask(text, languageDirection)
-        translateTask.onTranslateListener = object : ServerTaskListener.OnTranslateListener {
-            override fun onTranslated(translateResult: String) {
-                val jsonObject = JSONObject(translateResult)
+        val translateTask = ServerTask("$TRANSLATE_URL?key=$API_KEY&text=$text&lang=$languageDirection")
+        translateTask.setOnTaskCompleteListener { translateResult ->
+            val jsonObject = JSONObject(translateResult)
+            val answerCode = jsonObject.getInt("code")
+            var translatedText = ""
 
-                var translateText = jsonObject.getString("text")
-                translateText = translateText.substring(2, translateText.lastIndexOf("]") - 1)
-                val answerCode = jsonObject.getInt("code")
-
-                onTranslateTaskListener.onTranslateComplete(answerCode, text, translateText, fromLang, toLang)
+            if (answerCode != CONNECTION_ERROR && answerCode != VOID_TASK_ERROR) {
+                translatedText = jsonObject.getString("text")
+                translatedText = translatedText.substring(2, translatedText.lastIndexOf("]") - 1)
             }
+
+            onTranslateTaskListener.onTranslateComplete(answerCode, text, translatedText, fromLang, toLang)
         }
 
-        translateTask.execute()
+        translateTask.startTask()
     }
 
     override fun languageList(uiLanguage: String) {
-        val languageListTask = LanguageListTask(uiLanguage)
-        languageListTask.onGetLanguageListListener = object : ServerTaskListener.OnGetLanguageListListener {
-            override fun onGetLanguageList(languagesResult: String) {
-                languageMap.clear()
-                var answerCode = SUCCESSFUL_TASK
-                val jsonObject = JSONObject(languagesResult)
-                if (jsonObject.has("langs")) {
-                    val languagesArrayJson = jsonObject.getJSONObject("langs")
-                    val languagesNamesJsonArray = languagesArrayJson.names()
+        val languageListTask = ServerTask("$LANG_LIST_URL?key=$API_KEY&ui=$uiLanguage")
+        languageListTask.setOnTaskCompleteListener { languagesResult ->
+            languageMap.clear()
+            val jsonObject = JSONObject(languagesResult)
+            var answerCode = SUCCESSFUL_TASK
+            if (jsonObject.has("langs")) {
+                val languagesArrayJson = jsonObject.getJSONObject("langs")
+                val languagesNamesJsonArray = languagesArrayJson.names()
 
-                    for (i in 0 until languagesNamesJsonArray.length()) {
-                        val name = languagesNamesJsonArray.getString(i)
-                        languageMap[name] = languagesArrayJson.getString(name)
-                    }
-                } else {
-                    answerCode = if (jsonObject.has("code")) jsonObject.getInt("code") else UNKNOWN_ERROR
+                for (i in 0 until languagesNamesJsonArray.length()) {
+                    val name = languagesNamesJsonArray.getString(i)
+                    languageMap[name] = languagesArrayJson.getString(name)
                 }
-
-                onTranslateTaskListener.onGetLanguageListComplete(languageMap, answerCode)
+            } else {
+                answerCode = if (jsonObject.has("code")) jsonObject.getInt("code") else VOID_TASK_ERROR
             }
+
+            onTranslateTaskListener.onGetLanguageListComplete(languageMap, answerCode)
         }
 
-        languageListTask.execute()
+        languageListTask.startTask()
     }
 
-    class TranslateTask(val text: String, languageDirection: String)
-        : ServerTask(url = "$TRANSLATE_URL?key=$API_KEY&text=$text&lang=$languageDirection&callback=translate") {
-        lateinit var onTranslateListener: ServerTaskListener.OnTranslateListener
+    open class ServerTask(private val url: String) {
+        private val handler = Handler()
+        private var onTaskCompleteListener: ((result: String) -> Unit)? = null
 
-        override fun onPostExecute(result: String) {
-            super.onPostExecute(result)
-            if (result != "") {
-                val json = result.substring(result.indexOf("(") + 1, result.lastIndexOf(")"))
-                onTranslateListener.onTranslated(json)
-            }
+        fun setOnTaskCompleteListener(listener: ((result: String) -> Unit)) {
+            onTaskCompleteListener = listener
         }
-    }
 
-    class LanguageListTask(uiLanguage: String)
-        : ServerTask(url = "$LANG_LIST_URL?key=$API_KEY&ui=$uiLanguage") {
-        lateinit var onGetLanguageListListener: ServerTaskListener.OnGetLanguageListListener
-
-        override fun onPostExecute(result: String?) {
-            super.onPostExecute(result)
-            if (result != null)
-                onGetLanguageListListener.onGetLanguageList(result)
-        }
-    }
-
-    open class ServerTask(val url: String) : AsyncTask<Void, Void, String>() {
-        override fun doInBackground(vararg params: Void?): String {
-            var resultTranslate = ""
+        private val taskThread = Thread {
+            var result: String
             try {
                 val url = URL(url)
-
                 val urlConnection = url.openConnection() as HttpURLConnection
                 urlConnection.requestMethod = "GET"
                 urlConnection.connect()
 
                 val inputStream = urlConnection.inputStream
                 val reader = BufferedReader(InputStreamReader(inputStream))
+                result = reader.readLine()
 
-                resultTranslate = reader.readLine()
+            } catch (e: FileNotFoundException) {
+                result = "{ \"code\": $VOID_TASK_ERROR}"
             } catch (e: Exception) {
-                e.printStackTrace()
+                result = "{ \"code\": $CONNECTION_ERROR}"
             }
 
-            return resultTranslate
+            handler.post {
+                onTaskCompleteListener?.invoke(result)
+            }
         }
+
+        fun startTask() = taskThread.start()
     }
 }

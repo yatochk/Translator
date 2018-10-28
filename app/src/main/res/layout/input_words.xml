@@ -1,80 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="300dp"
+    android:layout_height="220dp"
     android:layout_alignParentBottom="true"
-    android:layout_marginBottom="-165dp"
+    android:layout_marginBottom="-22dp"
+    android:gravity="bottom"
     android:orientation="vertical">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/direction_translate"
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@color/colorPrimaryLight">
+        android:layout_height="210dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp">
 
-        <Spinner
-            android:id="@+id/from_lang_spinner"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_toStartOf="@id/swap_lang" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp">
 
-        <Button
-            android:id="@+id/swap_lang"
-            android:layout_width="40dp"
-            android:layout_height="35dp"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/direction" />
+            <EditText
+                android:id="@+id/translate_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/go_translate"
+                android:layout_below="@id/spinners"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:gravity="bottom"
+                android:hint="Enter your text"
+                android:inputType="textMultiLine"
+                android:textColor="@color/text_color_primary" />
 
-        <Spinner
-            android:id="@+id/to_lang_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_toEndOf="@id/swap_lang" />
+            <RelativeLayout
+                android:id="@+id/spinners"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="6dp">
 
-    </RelativeLayout>
+                <Spinner
+                    android:id="@+id/from_lang_spinner"
+                    android:layout_width="150dp"
+                    android:layout_height="26dp"
+                    android:layout_toStartOf="@id/swap_direction_button" />
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/input"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="@color/colorPrimary"
-        android:padding="@dimen/def_padding">
+                <ImageButton
+                    android:id="@+id/swap_direction_button"
+                    android:layout_width="35dp"
+                    android:layout_height="30dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/colorPrimary"
+                    android:src="@drawable/direction" />
 
-        <EditText
-            android:id="@+id/translate_text"
-            android:layout_width="270dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:gravity="bottom"
-            android:hint="@string/input_text"
-            android:inputType="textMultiLine"
-            android:isScrollContainer="false"
-            android:textColor="@color/text_color_primary"
-            android:textSize="18sp"/>
+                <Spinner
+                    android:id="@+id/to_lang_spinner"
+                    android:layout_width="150dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@id/swap_direction_button" />
 
-        <Button
-            android:id="@+id/go_translate"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/go_translate" />
-    </RelativeLayout>
+            </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimary"
-        android:padding="@dimen/def_padding">
+            <Button
+                android:id="@+id/go_translate"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/colorAccent"
+                android:text="@string/translate_button"
+                android:textAllCaps="false"
+                android:textColor="#000"
+                android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/translated_text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorPrimaryLight"
-            android:scrollbars="vertical" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 
-    </RelativeLayout>
 </LinearLayout>
 

@@ -2,4 +2,12 @@
     <string name="app_name" translatable="false">Translator</string>
     <string name="input_text">Enter words for translate</string>
     <string name="locale_cod">en</string>
+    <string name="translate_button">Translate</string>
+    <string name="connection_error">Please check internet connection</string>
+    <string name="langs_list_error">Failed to get language list</string>
+    <string name="impossible_translate">Your text cannot be translated</string>
+    <string name="length_error">Your text is too long</string>
+    <string name="unknow_error">Unknown translation error</string>
+    <string name="void_translate">Enter your text before translate</string>
+    <string name="copy_text">Translation copied</string>
 </resources>

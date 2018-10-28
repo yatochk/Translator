@@ -1,14 +1,14 @@
 package com.yatochk.translator.view
 
-import android.animation.Animator
-import android.animation.AnimatorInflater
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import com.yatochk.translator.R
 import com.yatochk.translator.dagger.App
@@ -17,13 +17,15 @@ import com.yatochk.translator.model.database.DatabaseTranslate
 import com.yatochk.translator.presenter.Presenter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.input_words.view.*
+import kotlinx.android.synthetic.main.show_translate.view.*
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
-class MainActivity : AppCompatActivity(), ViewContract {
 
+class MainActivity : AppCompatActivity(), ViewContract {
     override val context = this
+    override var translatedText = ""
     override var translateText = ""
     override var fromLanguage = "English"
     override var toLanguage = "Russian"
@@ -31,7 +33,6 @@ class MainActivity : AppCompatActivity(), ViewContract {
     @Inject
     lateinit var model: Model
 
-    private lateinit var openAnimator: Animator
     private lateinit var presenter: Presenter
     private lateinit var arrayAdapter: ArrayAdapter<String>
     private lateinit var recyclerAdapter: TranslateRecyclerViewAdapter
@@ -46,19 +47,23 @@ class MainActivity : AppCompatActivity(), ViewContract {
         App.component.injectsMainActivity(this)
         presenter = Presenter(model, this)
 
-        openAnimator = AnimatorInflater.loadAnimator(this, R.animator.open_translated)
-        openAnimator.setTarget(input_layout)
+        show_layout.translated_text.movementMethod = ScrollingMovementMethod()
+        show_layout.translated_text.setOnLongClickListener {
+            presenter.longClickTranslatedText()
+            true
+        }
 
         input_layout.go_translate.setOnClickListener {
             translateText = input_layout.translate_text.text.toString()
             presenter.translateClick()
         }
 
-        arrayAdapter = ArrayAdapter(this, R.layout.spinner, languagesNames)
+        arrayAdapter = ArrayAdapter(this, R.layout.spinner_row, R.id.language, languagesNames)
+        arrayAdapter.setDropDownViewResource(R.layout.spinner_row_drop)
         input_layout.from_lang_spinner.adapter = arrayAdapter
         input_layout.to_lang_spinner.adapter = arrayAdapter
 
-        input_layout.from_lang_spinner.onItemSelectedListener = object : OnItemSelectedListener {
+        input_layout.from_lang_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 fromLanguage = languagesNames[position]
@@ -67,7 +72,7 @@ class MainActivity : AppCompatActivity(), ViewContract {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        input_layout.to_lang_spinner.onItemSelectedListener = object : OnItemSelectedListener {
+        input_layout.to_lang_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 toLanguage = languagesNames[position]
@@ -76,17 +81,41 @@ class MainActivity : AppCompatActivity(), ViewContract {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        val onDelete = object : TranslateRecyclerViewAdapter.OnDeleteItem {
-            override fun onDelete(itemId: String) {
-                presenter.deleteClick(itemId)
-            }
+        input_layout.swap_direction_button.setOnClickListener {
+            val fromPosition = input_layout.from_lang_spinner.selectedItemPosition
+            input_layout.from_lang_spinner.setSelection(input_layout.to_lang_spinner.selectedItemPosition)
+            input_layout.to_lang_spinner.setSelection(fromPosition)
         }
-        recyclerAdapter = TranslateRecyclerViewAdapter(translates, onDelete)
-        translates_recycle.layoutManager = LinearLayoutManager(this)
-        translates_recycle.adapter = recyclerAdapter
 
-        input_layout.input.setOnFocusChangeListener { _, hasFocus ->
-            presenter.focusChangeInputText(hasFocus)
+        recyclerAdapter = TranslateRecyclerViewAdapter(translates)
+        recyclerAdapter.setOnClickDeleteListener { itemId ->
+            presenter.deleteClick(itemId)
+        }
+
+        recyclerAdapter.setOnClickTranslateListener {
+            show_layout.translated_text.text = it.to_text
+            input_layout.translate_text.text.clear()
+            input_layout.translate_text.setText(it.from_text)
+            selectSpinnerItemByValue(input_layout.from_lang_spinner, it.fromLanguage)
+            selectSpinnerItemByValue(input_layout.to_lang_spinner, it.toLanguage)
+        }
+
+        val layoutManager = LinearLayoutManager(this.context)
+        layoutManager.stackFromEnd = true
+        with(translates_recycle) {
+            itemAnimator = DefaultItemAnimator()
+            this.layoutManager = layoutManager
+            adapter = recyclerAdapter
+        }
+    }
+
+    private fun selectSpinnerItemByValue(spinner: Spinner, value: String) {
+        val adapter = spinner.adapter
+        for (position in 0 until adapter.count) {
+            if (adapter.getItem(position) == value) {
+                spinner.setSelection(position)
+                return
+            }
         }
     }
 
@@ -106,27 +135,21 @@ class MainActivity : AppCompatActivity(), ViewContract {
             this.translates.add(translate)
 
         recyclerAdapter.notifyDataSetChanged()
-    }
 
-    override fun openTranslateView() {
-        openAnimator.start()
-        openAnimator.setupEndValues()
-    }
-
-    override fun hideTranslateView() {
-
+        if (translates_recycle.adapter.itemCount > 0)
+            translates_recycle.smoothScrollToPosition(translates_recycle.adapter.itemCount - 1)
     }
 
     override fun showTranslatedText(text: String) {
-        input_layout.translated_text.text = text
-    }
-
-    override fun onBackPressed() {
-        if (presenter.backPressed())
-            super.onBackPressed()
+        translatedText = text
+        show_layout.translated_text.text = text
     }
 
     override fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    override fun clearInputText() {
+        input_layout.translate_text.text.clear()
     }
 }
