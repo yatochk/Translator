@@ -18,7 +18,6 @@ private const val SQL_CREATE_ENTRIES =
 private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${TranslateEntry.TABLE_NAME}"
 
 class DatabaseController : Database.Contract {
-
     lateinit var onDatabaseListener: Database.OnDatabaseListener
     private var databaseHelper: SQLiteOpenHelper? = null
     private var writableDatabase: SQLiteDatabase? = null
@@ -36,10 +35,10 @@ class DatabaseController : Database.Contract {
         }
 
         val addTranslateTask = AddTranslateTask(writableDatabase!!, values)
-        addTranslateTask.onAddTaskListener = object : DbTaskListener.OnAddTaskListener {
-            override fun onAdded(newRowId: Long) {
-                onDatabaseListener.onTranslateAdded()
-            }
+        addTranslateTask.setOnAddTranslateListener { rowId ->
+            onDatabaseListener.onTranslateAdded(
+                    DatabaseTranslate(rowId, fromLanguage, toLanguage, fromText, toText)
+            )
         }
 
         addTranslateTask.execute()
@@ -50,10 +49,8 @@ class DatabaseController : Database.Contract {
         writableDatabase = databaseHelper!!.writableDatabase
 
         val removeTask = RemoveTranslateTask(writableDatabase!!, removeRowId)
-        removeTask.onRemoveListener = object : DbTaskListener.OnRemoveListener {
-            override fun onRemoved() {
-                onDatabaseListener.onTranslateRemoved()
-            }
+        removeTask.setOnRemoveTranslateListener {
+            onDatabaseListener.onTranslateRemoved(removeRowId)
         }
         removeTask.execute()
     }
@@ -65,31 +62,30 @@ class DatabaseController : Database.Contract {
                 readableDatabase = databaseHelper!!.readableDatabase
         }
         val getTranslatesTask = GetTranslatesTask(readableDatabase!!)
-        getTranslatesTask.onGetTranslatesListener = object : DbTaskListener.OnGetTranslatesListener {
-            override fun onGetTranslates(translatesCursor: Cursor) {
-                val translatesArray = ArrayList<DatabaseTranslate>()
+        getTranslatesTask.setOnGetTranslatesListener { translatesCursor ->
+            val translatesArray = ArrayList<DatabaseTranslate>()
 
-                with(translatesCursor) {
-                    while (moveToNext()) {
-                        val rowId = getString(getColumnIndexOrThrow(TranslateEntry._ID))
-                        val fromLanguage = getString(getColumnIndexOrThrow(TranslateEntry.COLUMN_NAME_FROM_LANGUAGE))
-                        val toLanguage = getString(getColumnIndexOrThrow(TranslateEntry.COLUMN_NAME_TO_LANGUAGE))
-                        val fromText = getString(getColumnIndexOrThrow(TranslateEntry.COLUMN_NAME_FROM_TEXT))
-                        val toText = getString(getColumnIndexOrThrow(TranslateEntry.COLUMN_NAME_TO_TEXT))
+            with(translatesCursor) {
+                while (moveToNext()) {
+                    val rowId = getString(getColumnIndexOrThrow(TranslateEntry._ID))
+                    val fromLanguage = getString(getColumnIndexOrThrow(TranslateEntry.COLUMN_NAME_FROM_LANGUAGE))
+                    val toLanguage = getString(getColumnIndexOrThrow(TranslateEntry.COLUMN_NAME_TO_LANGUAGE))
+                    val fromText = getString(getColumnIndexOrThrow(TranslateEntry.COLUMN_NAME_FROM_TEXT))
+                    val toText = getString(getColumnIndexOrThrow(TranslateEntry.COLUMN_NAME_TO_TEXT))
 
-                        translatesArray.add(DatabaseTranslate(
-                                rowId,
-                                fromLanguage,
-                                toLanguage,
-                                fromText,
-                                toText
-                        ))
-                    }
+                    translatesArray.add(DatabaseTranslate(
+                            rowId,
+                            fromLanguage,
+                            toLanguage,
+                            fromText,
+                            toText
+                    ))
                 }
-                translatesCursor.close()
-
-                onDatabaseListener.onGetTranslates(translatesArray)
             }
+            translatesCursor.close()
+
+            onDatabaseListener.onGetTranslates(translatesArray)
+
         }
 
         getTranslatesTask.execute()
@@ -113,7 +109,10 @@ class DatabaseController : Database.Contract {
 
     class AddTranslateTask(private val writableDatabase: SQLiteDatabase, private val values: ContentValues)
         : AsyncTask<Void, Void, Long>() {
-        lateinit var onAddTaskListener: DbTaskListener.OnAddTaskListener
+        private var onAddTranslateListener: ((newRowId: String) -> Unit)? = null
+        fun setOnAddTranslateListener(listener: (newRowId: String) -> Unit) {
+            onAddTranslateListener = listener
+        }
 
         override fun doInBackground(vararg params: Void?): Long =
                 writableDatabase.insert(TranslateEntry.TABLE_NAME,
@@ -123,13 +122,16 @@ class DatabaseController : Database.Contract {
             super.onPostExecute(newRowId)
 
             if (newRowId != null)
-                onAddTaskListener.onAdded(newRowId)
+                onAddTranslateListener?.invoke(newRowId.toString())
         }
     }
 
     class RemoveTranslateTask(private val writableDatabase: SQLiteDatabase, private val rowId: String)
         : AsyncTask<Void, Void, Int>() {
-        lateinit var onRemoveListener: DbTaskListener.OnRemoveListener
+        private var onRemoveTranslateListener: ((deletedRowId: String) -> Unit)? = null
+        fun setOnRemoveTranslateListener(listener: (deletedRowId: String) -> Unit) {
+            onRemoveTranslateListener = listener
+        }
 
         override fun doInBackground(vararg params: Void?): Int {
             val selection = "${TranslateEntry._ID} LIKE ?"
@@ -141,12 +143,16 @@ class DatabaseController : Database.Contract {
         override fun onPostExecute(result: Int?) {
             super.onPostExecute(result)
 
-            onRemoveListener.onRemoved()
+            if (result != null)
+                onRemoveTranslateListener?.invoke(result.toString())
         }
     }
 
     class GetTranslatesTask(private val readableDatabase: SQLiteDatabase) : AsyncTask<Void, Void, Cursor>() {
-        lateinit var onGetTranslatesListener: DbTaskListener.OnGetTranslatesListener
+        private var onGetTranslatesListener: ((translatesCursor: Cursor) -> Unit)? = null
+        fun setOnGetTranslatesListener(listener: (translatesCursor: Cursor) -> Unit) {
+            onGetTranslatesListener = listener
+        }
 
         override fun doInBackground(vararg params: Void?): Cursor {
 
@@ -165,7 +171,7 @@ class DatabaseController : Database.Contract {
             super.onPostExecute(translatesCursor)
 
             if (translatesCursor != null)
-                onGetTranslatesListener.onGetTranslates(translatesCursor)
+                onGetTranslatesListener?.invoke(translatesCursor)
         }
     }
 }

@@ -12,6 +12,8 @@ object ModelContract {
 
     interface OnModelTaskListener {
         fun onGetSavedTranslate(arrayDatabaseTranslates: ArrayList<DatabaseTranslate>)
+        fun onRemoveTranslate(rowId: String)
+        fun onAddTranslate(translate: DatabaseTranslate)
         fun onTranslateComplete(translatedText: String)
         fun onTranslateError(errorCode: Int)
         fun onGetLanguageListComplete(languageList: LinkedHashMap<String, String>)

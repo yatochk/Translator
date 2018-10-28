@@ -19,6 +19,14 @@ class Presenter(val model: Model, val view: ViewContract) : PresenterContract {
             view.updateTranslateListAdapter(arrayDatabaseTranslates)
         }
 
+        override fun onAddTranslate(translate: DatabaseTranslate) {
+            view.addTranslate(translate)
+        }
+
+        override fun onRemoveTranslate(rowId: String) {
+            view.removeTranslate(rowId)
+        }
+
         override fun onTranslateComplete(translatedText: String) {
             view.showTranslatedText(translatedText)
             view.clearInputText()

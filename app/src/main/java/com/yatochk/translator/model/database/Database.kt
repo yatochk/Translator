@@ -1,7 +1,6 @@
 package com.yatochk.translator.model.database
 
 import android.content.Context
-import android.database.Cursor
 
 object Database {
     interface Contract {
@@ -12,21 +11,7 @@ object Database {
 
     interface OnDatabaseListener {
         fun onGetTranslates(arrayDatabaseTranslates: ArrayList<DatabaseTranslate>)
-        fun onTranslateAdded()
-        fun onTranslateRemoved()
-    }
-}
-
-object DbTaskListener {
-    interface OnAddTaskListener {
-        fun onAdded(newRowId: Long)
-    }
-
-    interface OnRemoveListener {
-        fun onRemoved()
-    }
-
-    interface OnGetTranslatesListener {
-        fun onGetTranslates(translatesCursor: Cursor)
+        fun onTranslateAdded(translate: DatabaseTranslate)
+        fun onTranslateRemoved(rowId: String)
     }
 }

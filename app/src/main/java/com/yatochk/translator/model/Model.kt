@@ -37,12 +37,12 @@ class Model(private val databaseController: DatabaseController,
                 onModelTaskListener.onGetSavedTranslate(arrayDatabaseTranslates)
             }
 
-            override fun onTranslateRemoved() {
-                databaseController.getTranslates(context)
+            override fun onTranslateRemoved(rowId: String) {
+                onModelTaskListener.onRemoveTranslate(rowId)
             }
 
-            override fun onTranslateAdded() {
-                databaseController.getTranslates(context)
+            override fun onTranslateAdded(translate: DatabaseTranslate) {
+                onModelTaskListener.onAddTranslate(translate)
             }
         }
     }

@@ -11,6 +11,8 @@ interface ViewContract {
     var toLanguage: String
     fun updateSpinnerAdapter(languages: LinkedHashMap<String, String>)
     fun updateTranslateListAdapter(translates: ArrayList<DatabaseTranslate>)
+    fun addTranslate(translate: DatabaseTranslate)
+    fun removeTranslate(rowId: String)
     fun showTranslatedText(text: String)
     fun showToast(message: String)
     fun clearInputText()

@@ -27,9 +27,17 @@ class TranslateRecyclerViewAdapter(private val translates: ArrayList<DatabaseTra
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val mHolder = holder as TranslateViewHolder
         val itemView = mHolder.itemView
+        val translate = DatabaseTranslate(
+                translates[position].rowId,
+                translates[position].fromLanguage,
+                translates[position].toLanguage,
+                translates[position].from_text,
+                translates[position].to_text
+        )
+
         with(itemView) {
             setOnClickListener {
-                onClickListener?.invoke(translates[position])
+                onClickListener?.invoke(translate)
             }
 
             from_text.text = translates[position].from_text
@@ -37,7 +45,7 @@ class TranslateRecyclerViewAdapter(private val translates: ArrayList<DatabaseTra
             from_lang.text = translates[position].fromLanguage
             to_lang.text = translates[position].toLanguage
             delete_button.setOnClickListener {
-                onDeleteItemListener?.invoke(translates[position].rowId)
+                onDeleteItemListener?.invoke(translate.rowId)
             }
         }
     }

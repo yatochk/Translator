@@ -135,9 +135,24 @@ class MainActivity : AppCompatActivity(), ViewContract {
             this.translates.add(translate)
 
         recyclerAdapter.notifyDataSetChanged()
+    }
 
-        if (translates_recycle.adapter.itemCount > 0)
-            translates_recycle.smoothScrollToPosition(translates_recycle.adapter.itemCount - 1)
+    override fun addTranslate(translate: DatabaseTranslate) {
+        translates.add(translate)
+        translates_recycle.smoothScrollToPosition(translates_recycle.adapter.itemCount - 1)
+        recyclerAdapter.notifyItemInserted(translates.size - 1)
+    }
+
+    override fun removeTranslate(rowId: String) {
+        var removePosition: Int? = null
+        for (position in 0 until translates.size)
+            if (translates[position].rowId == rowId)
+                removePosition = position
+
+        if (removePosition != null) {
+            recyclerAdapter.notifyItemRemoved(removePosition)
+            translates.removeAt(removePosition)
+        }
     }
 
     override fun showTranslatedText(text: String) {
