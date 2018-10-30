@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import com.yatochk.translator.R
+import com.yatochk.translator.R.string.*
 import com.yatochk.translator.model.Model
 import com.yatochk.translator.model.ModelContract
 import com.yatochk.translator.model.database.DatabaseTranslate
@@ -33,17 +34,16 @@ class Presenter(val model: Model, val view: ViewContract) : PresenterContract {
         }
 
         override fun onTranslateError(errorCode: Int) {
-            with(view.context) {
-                val message = when (errorCode) {
-                    LENGTH_ERROR -> getString(R.string.length_error)
-                    IMPOSSIBLY_ERROR -> getString(R.string.impossible_translate)
-                    CONNECTION_ERROR -> getString(R.string.connection_error)
-                    VOID_TASK_ERROR -> getString(R.string.void_translate)
-                    else -> view.context.getString(R.string.unknow_error)
-                }
+            val message = view.context.getString(
+                    when (errorCode) {
+                        LENGTH_ERROR -> length_error
+                        IMPOSSIBLY_ERROR -> impossible_translate
+                        CONNECTION_ERROR -> connection_error
+                        VOID_TASK_ERROR -> void_translate
+                        else -> unknow_error
+                    })
 
-                view.showToast(message)
-            }
+            view.showToast(message)
         }
 
         override fun onGetLanguageListComplete(languageList: LinkedHashMap<String, String>) {

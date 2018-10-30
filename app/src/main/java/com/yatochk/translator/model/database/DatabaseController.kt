@@ -108,13 +108,14 @@ class DatabaseController : Database.Contract {
     }
 
     class AddTranslateTask(private val writableDatabase: SQLiteDatabase, private val values: ContentValues)
-        : AsyncTask<Void, Void, Long>() {
+        : AsyncTask<Unit, Unit, Long>() {
+
         private var onAddTranslateListener: ((newRowId: String) -> Unit)? = null
         fun setOnAddTranslateListener(listener: (newRowId: String) -> Unit) {
             onAddTranslateListener = listener
         }
 
-        override fun doInBackground(vararg params: Void?): Long =
+        override fun doInBackground(vararg params: Unit?): Long =
                 writableDatabase.insert(TranslateEntry.TABLE_NAME,
                         null, values)
 
@@ -127,13 +128,13 @@ class DatabaseController : Database.Contract {
     }
 
     class RemoveTranslateTask(private val writableDatabase: SQLiteDatabase, private val rowId: String)
-        : AsyncTask<Void, Void, Int>() {
+        : AsyncTask<Unit, Unit, Int>() {
         private var onRemoveTranslateListener: ((deletedRowId: String) -> Unit)? = null
         fun setOnRemoveTranslateListener(listener: (deletedRowId: String) -> Unit) {
             onRemoveTranslateListener = listener
         }
 
-        override fun doInBackground(vararg params: Void?): Int {
+        override fun doInBackground(vararg params: Unit?): Int {
             val selection = "${TranslateEntry._ID} LIKE ?"
             val selectionArgs = arrayOf(rowId)
 

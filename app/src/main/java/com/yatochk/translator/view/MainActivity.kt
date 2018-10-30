@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), ViewContract {
     private lateinit var recyclerAdapter: TranslateRecyclerViewAdapter
 
     private val languagesNames = LinkedList<String>()
-    private val translates = ArrayList<DatabaseTranslate>()
+    private var translates = ArrayList<DatabaseTranslate>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,7 +130,6 @@ class MainActivity : AppCompatActivity(), ViewContract {
     }
 
     override fun updateTranslateListAdapter(translates: ArrayList<DatabaseTranslate>) {
-        this.translates.clear()
         for (translate in translates)
             this.translates.add(translate)
 
@@ -144,15 +143,9 @@ class MainActivity : AppCompatActivity(), ViewContract {
     }
 
     override fun removeTranslate(rowId: String) {
-        var removePosition: Int? = null
-        for (position in 0 until translates.size)
-            if (translates[position].rowId == rowId)
-                removePosition = position
-
-        if (removePosition != null) {
-            recyclerAdapter.notifyItemRemoved(removePosition)
-            translates.removeAt(removePosition)
-        }
+        val removePosition = translates.indexOfFirst { it.rowId == rowId }
+        recyclerAdapter.notifyItemRemoved(removePosition)
+        translates.removeAt(removePosition)
     }
 
     override fun showTranslatedText(text: String) {
