@@ -5,11 +5,11 @@ import android.app.Application
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        component = DaggerModelComponent.create()
+        component = DaggerPresenterComponent.create()
     }
 
     companion object {
-        lateinit var component: ModelComponent
+        lateinit var component: PresenterComponent
             private set
     }
 }

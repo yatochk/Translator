@@ -14,7 +14,17 @@ import com.yatochk.translator.model.translate.LENGTH_ERROR
 import com.yatochk.translator.model.translate.VOID_TASK_ERROR
 import com.yatochk.translator.view.ViewContract
 
-class Presenter(val model: Model, val view: ViewContract) : PresenterContract {
+class Presenter(val model: Model) : PresenterContract {
+    lateinit var view: ViewContract
+
+    override fun attachView(view: ViewContract) {
+        this.view = view
+        model.context = view.context
+        model.onModelTaskListener = onModelTaskListener
+        model.languageList(view.context.getString(R.string.locale_cod))
+        model.savedTranslate()
+    }
+
     private val onModelTaskListener = object : ModelContract.OnModelTaskListener {
         override fun onGetSavedTranslate(arrayDatabaseTranslates: ArrayList<DatabaseTranslate>) {
             view.updateTranslateListAdapter(arrayDatabaseTranslates)
@@ -57,13 +67,6 @@ class Presenter(val model: Model, val view: ViewContract) : PresenterContract {
 
             view.showToast(message)
         }
-    }
-
-    init {
-        model.context = view.context
-        model.onModelTaskListener = onModelTaskListener
-        model.languageList(view.context.getString(R.string.locale_cod))
-        model.savedTranslate()
     }
 
     override fun translateClick() {

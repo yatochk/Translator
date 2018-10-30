@@ -12,14 +12,12 @@ import android.widget.Spinner
 import android.widget.Toast
 import com.yatochk.translator.R
 import com.yatochk.translator.dagger.App
-import com.yatochk.translator.model.Model
 import com.yatochk.translator.model.database.DatabaseTranslate
 import com.yatochk.translator.presenter.Presenter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.input_words.view.*
 import kotlinx.android.synthetic.main.show_translate.view.*
 import java.util.*
-import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 
@@ -29,9 +27,6 @@ class MainActivity : AppCompatActivity(), ViewContract {
     override var translateText = ""
     override var fromLanguage = "English"
     override var toLanguage = "Russian"
-
-    @Inject
-    lateinit var model: Model
 
     private lateinit var presenter: Presenter
     private lateinit var arrayAdapter: ArrayAdapter<String>
@@ -44,8 +39,8 @@ class MainActivity : AppCompatActivity(), ViewContract {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        App.component.injectsMainActivity(this)
-        presenter = Presenter(model, this)
+        presenter = App.component.presenter
+        presenter.attachView(this)
 
         show_layout.translated_text.movementMethod = ScrollingMovementMethod()
         show_layout.translated_text.setOnLongClickListener {

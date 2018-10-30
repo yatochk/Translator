@@ -9,7 +9,6 @@ import dagger.Provides;
 
 @Module
 class ModelModule {
-
     @Provides
     Model provideModel(DatabaseController databaseController, OnlineTranslateController onlineTranslateController) {
         return new Model(databaseController, onlineTranslateController);
