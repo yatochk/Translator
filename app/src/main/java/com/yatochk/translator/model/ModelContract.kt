@@ -4,6 +4,7 @@ import com.yatochk.translator.model.database.DatabaseTranslate
 
 object ModelContract {
     interface Contract {
+        
         fun savedTranslate()
         fun translate(text: String, fromLang: String, toLang: String)
         fun languageList(uiLanguage: String)
@@ -11,6 +12,7 @@ object ModelContract {
     }
 
     interface OnModelTaskListener {
+        
         fun onGetSavedTranslate(arrayDatabaseTranslates: ArrayList<DatabaseTranslate>)
         fun onRemoveTranslate(rowId: String)
         fun onAddTranslate(translate: DatabaseTranslate)
